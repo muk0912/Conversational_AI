@@ -797,32 +797,31 @@ try {
     }
 
     function submitRatings() {
-        saveCurrentRatings();
+    saveCurrentRatings();
 
-        // Replace with your Google Web App URL
-        const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbwaSDReDpEbEMwsb1btn8GbhyhNHMnbkxOSHuBG5KJJAcNjG6S4szq1unuzZszlMbnnyw/exec';
+    // Replace with your Google Web App URL
+    const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbzhZhawix3_DTuKsY7RyMEF8phL-02F5sx4GvsFvJ4edcy27fYjISXNzBGQVXvUIlACLA/exec';
 
-        fetch(googleWebAppUrl, {
-            method: 'POST',
-            body: JSON.stringify({
-                participantId: participantId,
-                ratings: ratings
-            })
+    fetch(googleWebAppUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+            participantId: participantId,
+            ratings: ratings
         })
-        .then(response => response.text())
-        .then(result => {
-            console.log(result);
-            alert("Ratings submitted successfully!");
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error submitting ratings!');
-        });
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log(result);
+        alert("Ratings submitted successfully!");
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting ratings!');
+    });
 
-        ratingContainer.style.display = 'none';
-        thankYouContainer.style.display = 'block';
-    }
-
+    ratingContainer.style.display = 'none';
+    thankYouContainer.style.display = 'block';
+}
     try {
         initializeApp();
     } catch (error) {
