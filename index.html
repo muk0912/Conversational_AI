@@ -384,7 +384,7 @@ button:disabled {
 </style>
 
 <div class="participant-info">
-    <input type="text" id="participant-name" placeholder="Enter a Nick Name">
+    <input type="text" id="participant-name" placeholder="Enter Your First Name">
     <button id="start-btn">Start Evaluation</button>
 </div>
 
@@ -509,9 +509,6 @@ button:disabled {
 <div class="thank-you" id="thank-you">
     <h2>Thank you for your ratings!</h2>
     <p>Your feedback is valuable and will help improve AI responses.</p>
-    <button id="download-excel" class="download-btn">Download Your Ratings as Excel</button>
-    <button id="download-all-excel" class="download-btn" style="background-color: #8e44ad;">Download All Participant Ratings</button>
-    <p class="admin-note">(Admin only: The "Download All Participant Ratings" button formats data by questions and participants)</p>
 </div>
 </div>
 
@@ -567,8 +564,6 @@ try {
     const backBtn = document.getElementById('back-btn');
     const nextBtn = document.getElementById('next-btn');
     const submitBtn = document.getElementById('submit-btn');
-    const downloadBtn = document.getElementById('download-excel');
-    const downloadAllBtn = document.getElementById('download-all-excel');
     const startBtn = document.getElementById('start-btn');
     const progressContainer = document.getElementById('progress-container');
 
@@ -606,8 +601,6 @@ try {
     backBtn.addEventListener('click', goToPreviousStep);
     nextBtn.addEventListener('click', goToNextStep);
     submitBtn.addEventListener('click', submitRatings);
-    downloadBtn.addEventListener('click', downloadRatingsAsExcel);
-    downloadAllBtn.addEventListener('click', downloadAllRatingsAsExcel);
     startBtn.addEventListener('click', startEvaluation);
 
     function startEvaluation() {
@@ -804,97 +797,30 @@ try {
     }
 
     function submitRatings() {
-    saveCurrentRatings();
+        saveCurrentRatings();
 
-    // Replace with your Google Web App URL
-    const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbwaSDReDpEbEMwsb1btn8GbhyhNHMnbkxOSHuBG5KJJAcNjG6S4szq1unuzZszlMbnnyw/exec';
+        // Replace with your Google Web App URL
+        const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbwaSDReDpEbEMwsb1btn8GbhyhNHMnbkxOSHuBG5KJJAcNjG6S4szq1unuzZszlMbnnyw/exec';
 
-    fetch(googleWebAppUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-            participantId: participantId,
-            ratings: ratings
+        fetch(googleWebAppUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+                participantId: participantId,
+                ratings: ratings
+            })
         })
-    })
-    .then(response => response.text())
-    .then(result => {
-        console.log(result);
-        alert("Ratings submitted successfully!");
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error submitting ratings!');
-    });
+        .then(response => response.text())
+        .then(result => {
+            console.log(result);
+            alert("Ratings submitted successfully!");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error submitting ratings!');
+        });
 
-    ratingContainer.style.display = 'none';
-    thankYouContainer.style.display = 'block';
-}
-
-    function downloadRatingsAsExcel() {
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(ratings);
-        XLSX.utils.book_append_sheet(wb, ws, "Ratings");
-        XLSX.writeFile(wb, `AI_Response_Ratings_${participantId}.xlsx`);
-    }
-
-    function downloadAllRatingsAsExcel() {
-        const wb = XLSX.utils.book_new();
-        
-        // Prepare "All Ratings" sheet with first names included
-        const allData = [];
-        for (const participant in allParticipantData) {
-            const participantInfo = allParticipantData[participant];
-            participantInfo.ratings.forEach(rating => {
-                if (rating) {
-                    allData.push({
-                        ...rating,
-                        FirstName: participantInfo.firstName
-                    });
-                }
-            });
-        }
-        if (allData.length === 0) {
-            alert("No data available to download.");
-            return;
-        }
-        const rawWs = XLSX.utils.json_to_sheet(allData);
-        XLSX.utils.book_append_sheet(wb, rawWs, "All Ratings");
-        
-        // Prepare "Participants" sheet
-        const participantList = Object.keys(allParticipantData).map(pid => ({
-            "Participant ID": pid,
-            "First Name": allParticipantData[pid].firstName
-        }));
-        const participantsWs = XLSX.utils.json_to_sheet(participantList);
-        XLSX.utils.book_append_sheet(wb, participantsWs, "Participants");
-        
-        // Prepare "Question Matrix" sheet
-        const questionMatrix = [];
-        const participants = Object.keys(allParticipantData);
-        for (let i = 0; i < questionsAndResponses.length; i++) {
-            const question = questionsAndResponses[i];
-            const row = {
-                'Question ID': question.id,
-                'Question Type': question.type,
-                'Question Text': question.question.substring(0, 100) + '...'
-            };
-            participants.forEach(participant => {
-                const participantData = allParticipantData[participant].ratings;
-                const rating = participantData.find(r => r && r.questionIndex === i + 1);
-                if (rating) {
-                    row[`${participant} - Implementation`] = rating.implementation;
-                    row[`${participant} - Capability`] = rating.capability;
-                    row[`${participant} - Risk Calculation`] = rating.riskCalculation;
-                    row[`${participant} - Subject Matter`] = rating.subjectMatterExperience;
-                    row[`${participant} - Empathy`] = rating.empathy;
-                }
-            });
-            questionMatrix.push(row);
-        }
-        const matrixWs = XLSX.utils.json_to_sheet(questionMatrix);
-        XLSX.utils.book_append_sheet(wb, matrixWs, "Question Matrix");
-        
-        XLSX.writeFile(wb, "All_AI_Response_Ratings.xlsx");
+        ratingContainer.style.display = 'none';
+        thankYouContainer.style.display = 'block';
     }
 
     try {
@@ -909,10 +835,3 @@ try {
 </script>
 </body>
 </html>
-
-<!-- Set up Git credentials
-git config --global user.name "Your Bot Name"
-git config --global user.email "your-bot@example.com"
-
-# Use the PAT for authentication
-git remote set-url origin https://<PAT>@github.com/your-username/your-repo.git' -->
