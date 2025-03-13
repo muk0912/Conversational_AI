@@ -748,13 +748,17 @@ try {
     }
 
     function goToNextStep() {
-        saveCurrentRatings();
-        currentStep++;
-        if (currentStep < questionsAndResponses.length) {
-            showQuestionAndResponse(currentStep);
-            updateProgress();
-        }
+    saveCurrentRatings();
+    currentStep++;
+
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (currentStep < questionsAndResponses.length) {
+        showQuestionAndResponse(currentStep);
+        updateProgress();
     }
+}
 
     function goToPreviousStep() {
         if (currentStep > 0) {
