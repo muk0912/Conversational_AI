@@ -800,14 +800,24 @@ try {
     saveCurrentRatings();
 
     // Replace with your Google Web App URL
-    const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbyFIw6cjUqxesaUz-N56wC0l1OpQQykeR0HoxXyqMgpROahS1sfPP2REy9_mTsgUjOmyg/exec';
+    const googleWebAppUrl = 'https://script.google.com/macros/s/AKfycbwLd4bIRKH8TbqLzLTM_Pj8p-khI3nfCO-7PR1skTNOD-tqL6drcBs8tAOWO28b9jl-WQ/exec';
+
+    // Prepare the data to send
+    const dataToSend = {
+        participantId: participantId,
+        ratings: ratings.map(rating => ({
+            id: rating.id,
+            implementation: rating.implementation,
+            capability: rating.capability,
+            riskCalculation: rating.riskCalculation,
+            subjectMatterExperience: rating.subjectMatterExperience,
+            empathy: rating.empathy
+        }))
+    };
 
     fetch(googleWebAppUrl, {
         method: 'POST',
-        body: JSON.stringify({
-            participantId: participantId,
-            ratings: ratings
-        })
+        body: JSON.stringify(dataToSend)
     })
     .then(response => response.text())
     .then(result => {
